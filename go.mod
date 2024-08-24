@@ -1,4 +1,4 @@
-module github.com/ophum/mcclient
+module github.com/ophum/mc-client
 
 go 1.22.2
 
