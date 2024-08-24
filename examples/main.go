@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/ophum/mcclient"
+	mcclient "github.com/ophum/mc-client"
 	"gopkg.in/yaml.v3"
 )
 

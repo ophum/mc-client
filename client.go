@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gorcon/rcon"
-	"github.com/ophum/mcclient/whitelist"
+	"github.com/ophum/mc-client/whitelist"
 )
 
 type Interface interface {
