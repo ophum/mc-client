@@ -35,6 +35,10 @@ func (c *Client) List(ctx context.Context) ([]string, error) {
 		return nil, errors.New("invalid response")
 	}
 
+	if usersStr == "" {
+		return []string{}, nil
+	}
+
 	users := strings.Split(usersStr, ", ")
 
 	return users, nil
