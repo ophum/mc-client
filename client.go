@@ -1,15 +1,19 @@
 package mcclient
 
 import (
+	"context"
 	"net"
 	"strconv"
 
 	"github.com/gorcon/rcon"
+	"github.com/ophum/mc-client/list"
 	"github.com/ophum/mc-client/whitelist"
 )
 
 type Interface interface {
 	Whitelist() whitelist.Interface
+
+	list.Interface
 
 	Close() error
 }
@@ -34,4 +38,8 @@ func (c *Client) Close() error {
 
 func (c *Client) Whitelist() whitelist.Interface {
 	return whitelist.New(c.conn)
+}
+
+func (c *Client) List(ctx context.Context) ([]string, error) {
+	return list.New(c.conn).List(ctx)
 }

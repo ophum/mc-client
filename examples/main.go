@@ -54,10 +54,10 @@ func main() {
 		log.Println(u)
 	}
 
-	if err := client.Whitelist().Remove(ctx, "hum_op"); err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Removed hum_op")
+	//if err := client.Whitelist().Remove(ctx, "hum_op"); err != nil {
+	//	log.Fatal(err)
+	//}
+	//log.Println("Removed hum_op")
 
 	users, err = client.Whitelist().List(ctx)
 	if err != nil {
@@ -65,6 +65,15 @@ func main() {
 	}
 
 	for _, u := range users {
+		log.Println(u)
+	}
+
+	joinedUsers, err := client.List(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("current players")
+	for _, u := range joinedUsers {
 		log.Println(u)
 	}
 
