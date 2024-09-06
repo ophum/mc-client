@@ -32,11 +32,26 @@ func (c *RetryableRcon) Close() error {
 	return c.cache.Close()
 }
 
+func (c *RetryableRcon) connect() error {
+	var err error
+	c.cache, err = rcon.Dial(c.address, c.password, c.options...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // 最大2回実行しエラーになったら、rcon.Dialしなおして再度実行する
 // それでもエラーになったらエラーを返す
 func (c *RetryableRcon) Execute(command string) (string, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+
+	if c.cache == nil {
+		if err := c.connect(); err != nil {
+			return "", err
+		}
+	}
 
 	var err error
 	var res string
@@ -45,18 +60,13 @@ func (c *RetryableRcon) Execute(command string) (string, error) {
 		if err == nil {
 			break
 		}
+		if err := c.connect(); err != nil {
+			return "", err
+		}
 	}
 
 	if err != nil {
-		c.cache, err = rcon.Dial(c.address, c.password, c.options...)
-		if err != nil {
-			return "", err
-		}
-
-		res, err = c.cache.Execute(command)
-		if err != nil {
-			return "", err
-		}
+		return "", err
 	}
 
 	return res, nil
