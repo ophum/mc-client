@@ -5,8 +5,8 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/gorcon/rcon"
 	"github.com/ophum/mc-client/list"
+	"github.com/ophum/mc-client/rcon"
 	"github.com/ophum/mc-client/whitelist"
 )
 
@@ -19,13 +19,13 @@ type Interface interface {
 }
 
 type Client struct {
-	conn *rcon.Conn
+	conn *rcon.RetryableRcon
 }
 
 var _ Interface = (*Client)(nil)
 
 func New(host string, port int, password string) (*Client, error) {
-	c, err := rcon.Dial(net.JoinHostPort(host, strconv.Itoa(port)), password)
+	c, err := rcon.New(net.JoinHostPort(host, strconv.Itoa(port)), password)
 	if err != nil {
 		return nil, err
 	}

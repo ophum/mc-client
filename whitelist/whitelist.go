@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/gorcon/rcon"
+	"github.com/ophum/mc-client/rcon"
 )
 
 type Interface interface {
@@ -17,10 +17,10 @@ type Interface interface {
 }
 
 type Client struct {
-	conn *rcon.Conn
+	conn *rcon.RetryableRcon
 }
 
-func New(conn *rcon.Conn) *Client {
+func New(conn *rcon.RetryableRcon) *Client {
 	return &Client{conn}
 }
 
