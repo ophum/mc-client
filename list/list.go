@@ -3,6 +3,7 @@ package list
 import (
 	"context"
 	"errors"
+	"log"
 	"strings"
 
 	"github.com/ophum/mc-client/rcon"
@@ -13,21 +14,27 @@ type Interface interface {
 }
 
 type Client struct {
-	conn *rcon.RetryableRcon
+	conn       *rcon.RetryableRcon
+	serverType rcon.ServerType
 }
 
 var _ Interface = (*Client)(nil)
 
-func New(conn *rcon.RetryableRcon) *Client {
-	return &Client{conn}
+func New(conn *rcon.RetryableRcon, serverType rcon.ServerType) *Client {
+	return &Client{conn, serverType}
 }
 
 func (c *Client) List(ctx context.Context) ([]string, error) {
-	res, err := c.conn.Execute("/list")
+	command := map[rcon.ServerType]string{
+		rcon.ServerTypeVanilla: "/list",
+		rcon.ServerTypeSpigot:  "list",
+	}
+	res, err := c.conn.Execute(command[c.serverType])
 	if err != nil {
 		return nil, err
 	}
 
+	log.Println(res)
 	_, usersStr, found := strings.Cut(res, ": ")
 	if !found {
 		return nil, errors.New("invalid response")

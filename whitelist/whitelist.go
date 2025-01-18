@@ -17,15 +17,28 @@ type Interface interface {
 }
 
 type Client struct {
-	conn *rcon.RetryableRcon
+	conn       *rcon.RetryableRcon
+	serverType rcon.ServerType
+	command    string
 }
 
-func New(conn *rcon.RetryableRcon) *Client {
-	return &Client{conn}
+func New(conn *rcon.RetryableRcon, serverType rcon.ServerType) *Client {
+	command := ""
+	switch serverType {
+	case rcon.ServerTypeVanilla:
+		command = "/whitelist"
+	case rcon.ServerTypeSpigot:
+		command = "whitelist"
+	}
+	return &Client{conn, serverType, command}
 }
 
+func (c *Client) commandWithArgs(args string) string {
+	return c.command + " " + args
+}
 func (c *Client) List(ctx context.Context) ([]string, error) {
-	res, err := c.conn.Execute("/whitelist list")
+
+	res, err := c.conn.Execute(c.commandWithArgs("list"))
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +58,7 @@ func (c *Client) List(ctx context.Context) ([]string, error) {
 }
 
 func (c *Client) Add(ctx context.Context, name string) error {
-	res, err := c.conn.Execute("/whitelist add " + name)
+	res, err := c.conn.Execute(c.commandWithArgs("add " + name))
 	if err != nil {
 		return err
 	}
@@ -66,7 +79,7 @@ func (c *Client) Add(ctx context.Context, name string) error {
 }
 
 func (c *Client) Remove(ctx context.Context, name string) error {
-	res, err := c.conn.Execute("/whitelist remove " + name)
+	res, err := c.conn.Execute(c.commandWithArgs("remove " + name))
 	if err != nil {
 		return err
 	}

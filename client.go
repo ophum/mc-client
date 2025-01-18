@@ -19,17 +19,37 @@ type Interface interface {
 }
 
 type Client struct {
-	conn *rcon.RetryableRcon
+	conn       *rcon.RetryableRcon
+	serverType rcon.ServerType
 }
 
 var _ Interface = (*Client)(nil)
 
-func New(host string, port int, password string) (*Client, error) {
+type Options struct {
+	serverType rcon.ServerType
+}
+
+type Option func(o *Options)
+
+func WithServerType(serverType rcon.ServerType) Option {
+	return func(o *Options) {
+		o.serverType = serverType
+	}
+}
+
+func New(host string, port int, password string, options ...Option) (*Client, error) {
+	opts := &Options{
+		serverType: rcon.ServerTypeVanilla,
+	}
+	for _, opt := range options {
+		opt(opts)
+	}
+
 	c, err := rcon.New(net.JoinHostPort(host, strconv.Itoa(port)), password)
 	if err != nil {
 		return nil, err
 	}
-	return &Client{c}, nil
+	return &Client{c, opts.serverType}, nil
 }
 
 func (c *Client) Close() error {
@@ -37,9 +57,9 @@ func (c *Client) Close() error {
 }
 
 func (c *Client) Whitelist() whitelist.Interface {
-	return whitelist.New(c.conn)
+	return whitelist.New(c.conn, c.serverType)
 }
 
 func (c *Client) List(ctx context.Context) ([]string, error) {
-	return list.New(c.conn).List(ctx)
+	return list.New(c.conn, c.serverType).List(ctx)
 }

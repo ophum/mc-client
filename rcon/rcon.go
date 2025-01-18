@@ -6,12 +6,20 @@ import (
 	"github.com/gorcon/rcon"
 )
 
+type ServerType string
+
+const (
+	ServerTypeVanilla ServerType = "vanilla"
+	ServerTypeSpigot  ServerType = "spigot"
+)
+
 type RetryableRcon struct {
-	cache    *rcon.Conn
-	address  string
-	password string
-	options  []rcon.Option
-	mu       sync.Mutex
+	cache      *rcon.Conn
+	address    string
+	password   string
+	options    []rcon.Option
+	mu         sync.Mutex
+	serverType ServerType
 }
 
 func New(address, password string, options ...rcon.Option) (*RetryableRcon, error) {

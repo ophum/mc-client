@@ -7,6 +7,7 @@ import (
 	"os"
 
 	mcclient "github.com/ophum/mc-client"
+	"github.com/ophum/mc-client/rcon"
 	"gopkg.in/yaml.v3"
 )
 
@@ -33,19 +34,29 @@ func init() {
 	}
 }
 func main() {
-	client, err := mcclient.New(config.Host, config.Port, config.Password)
+	client, err := mcclient.New(config.Host, config.Port, config.Password,
+		mcclient.WithServerType(rcon.ServerTypeSpigot),
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer client.Close()
 
 	ctx := context.Background()
+
+	users, err := client.List(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(users)
+
+	os.Exit(0)
 	if err := client.Whitelist().Add(ctx, "hum_op"); err != nil {
 		log.Fatal(err)
 	}
 	log.Println("added hum_op")
 
-	users, err := client.Whitelist().List(ctx)
+	users, err = client.Whitelist().List(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
