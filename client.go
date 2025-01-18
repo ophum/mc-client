@@ -11,6 +11,8 @@ import (
 )
 
 type Interface interface {
+	Raw(command string) (string, error)
+
 	Whitelist() whitelist.Interface
 
 	list.Interface
