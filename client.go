@@ -56,6 +56,10 @@ func (c *Client) Close() error {
 	return c.conn.Close()
 }
 
+func (c *Client) Raw(command string) (string, error) {
+	return c.conn.Execute(command)
+}
+
 func (c *Client) Whitelist() whitelist.Interface {
 	return whitelist.New(c.conn, c.serverType)
 }
